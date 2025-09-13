@@ -69,3 +69,6 @@ cd restaurant-management-system
 
 # Install dependencies
 npm install   # or dotnet restore
+
+## Contributors
+- Oluwaniyi Akin
