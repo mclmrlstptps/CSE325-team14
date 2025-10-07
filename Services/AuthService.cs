@@ -19,7 +19,7 @@ namespace RestaurantMS.Services
         {
             _mongoService = mongoService;
             _configuration = configuration;
-            _jwtSecret = _configuration["Jwt:Secret"] ?? "";
+            _jwtSecret = _configuration["Jwt:Secret"] ?? "RestaurantMS_SuperSecretKey_2024_ForJWTTokenGeneration_AtLeast32Chars!";
             _jwtIssuer = _configuration["Jwt:Issuer"] ?? "RestaurantMS";
             _jwtAudience = _configuration["Jwt:Audience"] ?? "RestaurantMS";
         }
@@ -53,6 +53,22 @@ namespace RestaurantMS.Services
 
                 // save to database
                 await _mongoService.CreateUserAsync(user);
+
+                // generate JWT token
+                var token = GenerateJwtToken(user);
+
+                return new AuthResponse
+                {
+                    Token = token,
+                    User = new UserInfo
+                    {
+                        Id = user.Id ?? "",
+                        Email = user.Email,
+                        Name = user.Name,
+                        Role = user.Role
+                    }
+                };
+            }
             }
             catch (Exception ex)
             {
