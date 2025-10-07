@@ -47,5 +47,19 @@ namespace RestaurantMS.Services
             await _users.DeleteOneAsync(user => user.Id == id);
         }
 
+        // to test connection
+        public async Task<bool> TestConnectionAsync()
+        {
+            try
+            {
+                await _database.RunCommandAsync((Command<object>)"{ping:1}");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
     }
 }
