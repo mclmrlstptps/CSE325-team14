@@ -40,6 +40,21 @@ namespace RestaurantMS.Services
                     throw new InvalidOperationException("User with this email already exists");
                 }
 
+                // create new user
+                var user = new User
+                {
+                    Email = email.ToLowerInvariant(),
+                    PasswordHash = HashPassword(password),
+                    Name = name,
+                    Role = role,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                // save to database
+                await _mongoService.CreateUserAsync(user);
+            }
+
         }
 
     }
