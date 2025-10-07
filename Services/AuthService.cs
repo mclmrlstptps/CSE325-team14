@@ -23,6 +23,24 @@ namespace RestaurantMS.Services
             _jwtIssuer = _configuration["Jwt:Issuer"] ?? "RestaurantMS";
             _jwtAudience = _configuration["Jwt:Audience"] ?? "RestaurantMS";
         }
+        public async Task<AuthResponse?> RegisterAsync(string email, string password, string name, string role)
+        {
+            try
+            {
+                // check role, manager or employee
+                if (role != "Manager" && role != "Employee")
+                {
+                    throw new ArgumentException("Role must be either 'Manager' or 'Employee'");
+                }
+
+                // check if user exists
+                var existingUser = await _mongoService.GetUserByEmailAsync(email);
+                if (existingUser != null)
+                {
+                    throw new InvalidOperationException("User with this email already exists");
+                }
+
+        }
 
     }
 }
