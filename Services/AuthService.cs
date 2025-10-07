@@ -54,6 +54,11 @@ namespace RestaurantMS.Services
                 // save to database
                 await _mongoService.CreateUserAsync(user);
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Registration error: {ex.Message}");
+                throw;
+            }
 
         }
 
