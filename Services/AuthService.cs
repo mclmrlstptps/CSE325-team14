@@ -15,6 +15,14 @@ namespace RestaurantMS.Services
         private readonly string _jwtIssuer;
         private readonly string _jwtAudience;
 
-       
+        public AuthService(MongoDBService mongoService, IConfiguration configuration)
+        {
+            _mongoService = mongoService;
+            _configuration = configuration;
+            _jwtSecret = _configuration["Jwt:Secret"] ?? "";
+            _jwtIssuer = _configuration["Jwt:Issuer"] ?? "RestaurantMS";
+            _jwtAudience = _configuration["Jwt:Audience"] ?? "RestaurantMS";
+        }
+
     }
 }
