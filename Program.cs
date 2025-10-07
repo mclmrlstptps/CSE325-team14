@@ -10,6 +10,9 @@ builder.Services.AddServerSideBlazor();
 // import MongoDB service
 builder.Services.AddSingleton<MongoDBService>();
 
+// import Auth service
+builder.Services.AddScoped<AuthService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
