@@ -78,5 +78,10 @@ namespace RestaurantMS.Services
 
         }
 
+        private string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
     }
 }
