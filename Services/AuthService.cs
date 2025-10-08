@@ -77,6 +77,51 @@ namespace RestaurantMS.Services
 
         }
 
+        public async Task<AuthResponse?> LoginAsync(string email, string password)
+        {
+            try
+            {
+                // Find user by email
+                var user = await _mongoService.GetUserByEmailAsync(email.ToLowerInvariant());
+                if (user == null)
+                {
+                    throw new InvalidOperationException("Invalid email or password");
+                }
+
+                // Check if user is active
+                if (!user.IsActive)
+                {
+                    throw new InvalidOperationException("Account is deactivated");
+                }
+
+                // Verify password
+                if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                {
+                    throw new InvalidOperationException("Invalid email or password");
+                }
+
+                // Generate JWT token
+                var token = GenerateJwtToken(user);
+
+                return new AuthResponse
+                {
+                    Token = token,
+                    User = new UserInfo
+                    {
+                        Id = user.Id ?? "",
+                        Email = user.Email,
+                        Name = user.Name,
+                        Role = user.Role
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Login error: {ex.Message}");
+                throw;
+            }
+        }
+
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
