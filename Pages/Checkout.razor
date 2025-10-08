@@ -1,0 +1,48 @@
+@page "/checkout"
+@using RestaurantMS.Models
+@inject RestaurantMS.Services.CartService CartService
+@inject RestaurantMS.Services.OrderService OrderService
+
+<h3>Checkout</h3>
+
+@if (!CartService.Items.Any())
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <EditForm Model="@CustomerInfo" OnValidSubmit="PlaceOrder">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <InputText @bind-Value="CustomerInfo.Name" placeholder="Name" />
+        <InputText @bind-Value="CustomerInfo.Email" placeholder="Email" />
+        <InputText @bind-Value="CustomerInfo.Phone" placeholder="Phone" />
+
+        <p>Total: @CartService.GetTotal().ToString("C")</p>
+        <button type="submit">Place Order</button>
+    </EditForm>
+}
+
+@code {
+    private CustomerInfo CustomerInfo = new();
+
+    private async Task PlaceOrder()
+    {
+        var order = new Order
+        {
+            Items = CartService.Items,
+            Total = CartService.GetTotal(),
+            CustomerName = CustomerInfo.Name,
+            CustomerEmail = CustomerInfo.Email,
+            CustomerPhone = CustomerInfo.Phone,
+            Status = "Pending"
+        };
+
+        await OrderService.CreateOrder(order);
+        CartService.Clear();
+
+        // Optional: redirect to a confirmation page
+        // NavigationManager.NavigateTo("/order-confirmation");
+    }
+}
