@@ -11,7 +11,13 @@ namespace RestaurantMS.Services
         public MongoDBService(IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("MongoDB");
-            var client = new MongoClient(connectionString);
+            
+            var settings = MongoClientSettings.FromConnectionString(connectionString);
+            settings.ServerSelectionTimeout = TimeSpan.FromSeconds(30);
+            settings.ConnectTimeout = TimeSpan.FromSeconds(30);
+            settings.SocketTimeout = TimeSpan.FromSeconds(30);
+            
+            var client = new MongoClient(settings);
             _database = client.GetDatabase("RestaurantMS");
             _users = _database.GetCollection<User>("Users");
         }
