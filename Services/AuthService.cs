@@ -1,0 +1,155 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using RestaurantMS.Models;
+using BCrypt.Net;
+
+namespace RestaurantMS.Services
+{
+    public class AuthService
+    {
+        private readonly MongoDBService _mongoService;
+        private readonly IConfiguration _configuration;
+        private readonly string _jwtSecret;
+        private readonly string _jwtIssuer;
+        private readonly string _jwtAudience;
+
+        public AuthService(MongoDBService mongoService, IConfiguration configuration)
+        {
+            _mongoService = mongoService;
+            _configuration = configuration;
+            _jwtSecret = _configuration["Jwt:Secret"] ?? "RestaurantMS_SuperSecretKey_2024_ForJWTTokenGeneration_AtLeast32Chars!";
+            _jwtIssuer = _configuration["Jwt:Issuer"] ?? "RestaurantMS";
+            _jwtAudience = _configuration["Jwt:Audience"] ?? "RestaurantMS";
+        }
+        public async Task<AuthResponse?> RegisterAsync(string email, string password, string name, string role)
+        {
+            try
+            {
+                // check role, manager or employee
+                if (role != "Manager" && role != "Employee")
+                {
+                    throw new ArgumentException("Role must be either 'Manager' or 'Employee'");
+                }
+
+                // check if user exists
+                var existingUser = await _mongoService.GetUserByEmailAsync(email);
+                if (existingUser != null)
+                {
+                    throw new InvalidOperationException("User with this email already exists");
+                }
+
+                // create new user
+                var user = new User
+                {
+                    Email = email.ToLowerInvariant(),
+                    PasswordHash = HashPassword(password),
+                    Name = name,
+                    Role = role,
+                    CreatedAt = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                // save to database
+                await _mongoService.CreateUserAsync(user);
+
+                // generate JWT token
+                var token = GenerateJwtToken(user);
+
+                return new AuthResponse
+                {
+                    Token = token,
+                    User = new UserInfo
+                    {
+                        Id = user.Id ?? "",
+                        Email = user.Email,
+                        Name = user.Name,
+                        Role = user.Role
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Registration error: {ex.Message}");
+                throw;
+            }
+
+        }
+
+        public async Task<AuthResponse?> LoginAsync(string email, string password)
+        {
+            try
+            {
+                // Find user by email
+                var user = await _mongoService.GetUserByEmailAsync(email.ToLowerInvariant());
+                if (user == null)
+                {
+                    throw new InvalidOperationException("Invalid email or password");
+                }
+
+                // Check if user is active
+                if (!user.IsActive)
+                {
+                    throw new InvalidOperationException("Account is deactivated");
+                }
+
+                // Verify password
+                if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                {
+                    throw new InvalidOperationException("Invalid email or password");
+                }
+
+                // Generate JWT token
+                var token = GenerateJwtToken(user);
+
+                return new AuthResponse
+                {
+                    Token = token,
+                    User = new UserInfo
+                    {
+                        Id = user.Id ?? "",
+                        Email = user.Email,
+                        Name = user.Name,
+                        Role = user.Role
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Login error: {ex.Message}");
+                throw;
+            }
+        }
+
+        private string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        private string GenerateJwtToken(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtSecret);
+            
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id ?? ""),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.Role, user.Role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7), // Token expires in 7 days
+                Issuer = _jwtIssuer,
+                Audience = _jwtAudience,
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+    }
+}

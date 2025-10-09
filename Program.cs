@@ -13,9 +13,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<CartService>();   // Cart service (per user session)
-builder.Services.AddScoped<OrderService>();  // Order service (for database operations)
 
+// import MongoDB service
+builder.Services.AddSingleton<MongoDBService>();
+
+// import Auth service
+builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
 
