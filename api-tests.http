@@ -1,0 +1,60 @@
+### Get all menu items
+GET http://localhost:5000/api/MenuItem
+Content-Type: application/json
+
+###
+
+### Create a new menu item
+POST http://localhost:5000/api/MenuItem
+Content-Type: application/json
+
+{
+  "name": "Spaghetti Carbonara",
+  "description": "Classic Italian pasta with eggs, cheese, pancetta, and pepper.",
+  "price": 10.50,
+  "reviews": []
+}
+
+###
+
+### Get menu item by ID
+GET http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001
+Content-Type: application/json
+
+###
+
+### Update a menu item by ID
+PUT http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001
+Content-Type: application/json
+
+{
+  "name": "Yummy Hillary",
+  "description": "Juicy grilled chicken with lettuce, tomato, and special sauce.",
+  "price": 7.49,
+  "reviews": []
+}
+
+###
+
+### Delete a menu item by ID
+DELETE http://localhost:5000/api/MenuItem/(Add an ID for an existing menuitem)
+Content-Type: application/json
+
+###
+
+### Add a review to a menu item
+POST http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001/reviews
+Content-Type: application/json
+
+{
+  "reviewerName": "Alice Johnson",
+  "rating": 5,
+  "comment": "Absolutely fantastic pizza!",
+  "createdAt": "2025-10-10T10:00:00Z"
+}
+
+###
+
+### Get reviews for a menu item
+GET http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001/reviews
+Content-Type: application/json

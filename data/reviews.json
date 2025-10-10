@@ -1,0 +1,37 @@
+[
+  {
+    "_id": "671f5bdaf21a1a1b1d9a2001",
+    "reviewerName": "John Doe",
+    "rating": 5,
+    "comment": "Absolutely loved the pizza! Fresh and flavorful.",
+    "createdAt": "2025-10-10T08:00:00Z"
+  },
+  {
+    "_id": "671f5bdaf21a1a1b1d9a2002",
+    "reviewerName": "Jane Smith",
+    "rating": 4,
+    "comment": "The chicken sandwich was great but could use more sauce.",
+    "createdAt": "2025-10-09T15:30:00Z"
+  },
+  {
+    "_id": "671f5bdaf21a1a1b1d9a2003",
+    "reviewerName": "Michael Brown",
+    "rating": 5,
+    "comment": "The burger was juicy and perfectly cooked!",
+    "createdAt": "2025-10-08T12:00:00Z"
+  },
+  {
+    "_id": "671f5bdaf21a1a1b1d9a2004",
+    "reviewerName": "Sarah Wilson",
+    "rating": 3,
+    "comment": "Healthy wrap, but could use more flavor.",
+    "createdAt": "2025-10-07T18:45:00Z"
+  },
+  {
+    "_id": "671f5bdaf21a1a1b1d9a2005",
+    "reviewerName": "David Lee",
+    "rating": 4,
+    "comment": "Good salad, crisp and well dressed.",
+    "createdAt": "2025-10-06T14:20:00Z"
+  }
+]

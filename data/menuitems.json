@@ -1,0 +1,37 @@
+[
+  {
+    "_id": "671f5b92f21a1a1b1d9a1001",
+    "name": "Margherita Pizza",
+    "description": "Classic cheese and tomato pizza with fresh basil.",
+    "price": 8.99,
+    "reviews": []
+  },
+  {
+    "_id": "671f5b92f21a1a1b1d9a1002",
+    "name": "Grilled Chicken Sandwich",
+    "description": "Juicy grilled chicken with lettuce and tomato.",
+    "price": 6.49,
+    "reviews": []
+  },
+  {
+    "_id": "671f5b92f21a1a1b1d9a1003",
+    "name": "Veggie Wrap",
+    "description": "Healthy wrap with mixed veggies and hummus.",
+    "price": 5.99,
+    "reviews": []
+  },
+  {
+    "_id": "671f5b92f21a1a1b1d9a1004",
+    "name": "Beef Burger",
+    "description": "Grilled beef patty with cheese, lettuce, and tomato.",
+    "price": 9.49,
+    "reviews": []
+  },
+  {
+    "_id": "671f5b92f21a1a1b1d9a1005",
+    "name": "Caesar Salad",
+    "description": "Crisp romaine with Caesar dressing and croutons.",
+    "price": 7.25,
+    "reviews": []
+  }
+]
