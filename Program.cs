@@ -11,7 +11,8 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<MongoDBService>();
 
 // import Auth service
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddSingleton<AuthService>();
+builder.Services.AddSingleton<MenuService>();
 
 var app = builder.Build();
 
