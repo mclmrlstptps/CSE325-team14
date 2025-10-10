@@ -5,7 +5,7 @@
 
 <h3>Checkout</h3>
 
-@if (!CartService.Items.Any())
+@if (Cart == null || Cart.Items.Count == 0)
 {
     <p>Your cart is empty.</p>
 }
@@ -15,34 +15,68 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <InputText @bind-Value="CustomerInfo.Name" placeholder="Name" />
-        <InputText @bind-Value="CustomerInfo.Email" placeholder="Email" />
-        <InputText @bind-Value="CustomerInfo.Phone" placeholder="Phone" />
+        <div>
+            <label>Name:</label>
+            <InputText @bind-Value="CustomerInfo.Name" placeholder="Name" />
+        </div>
 
-        <p>Total: @CartService.GetTotal().ToString("C")</p>
+        <div>
+            <label>Email:</label>
+            <InputText @bind-Value="CustomerInfo.Email" placeholder="Email" />
+        </div>
+
+        <div>
+            <label>Phone:</label>
+            <InputText @bind-Value="CustomerInfo.Phone" placeholder="Phone" />
+        </div>
+
+        <p>Total: @Total.ToString("C")</p>
         <button type="submit">Place Order</button>
     </EditForm>
 }
 
 @code {
     private CustomerInfo CustomerInfo = new();
+    private Cart? Cart;
+    private decimal Total = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Replace with actual authenticated user ID
+        string userId = "some-user-id";
+
+        Cart = await CartService.GetCartByUserIdAsync(userId);
+        if (Cart != null)
+        {
+            Total = Cart.Total;
+        }
+    }
 
     private async Task PlaceOrder()
     {
+        if (Cart == null || Cart.Items.Count == 0)
+            return;
+
         var order = new Order
         {
-            Items = CartService.Items,
-            Total = CartService.GetTotal(),
+            Items = Cart.Items,
+            Total = Total,
             CustomerName = CustomerInfo.Name,
             CustomerEmail = CustomerInfo.Email,
             CustomerPhone = CustomerInfo.Phone,
-            Status = "Pending"
+            Status = "Pending",
+            CreatedAt = DateTime.UtcNow
         };
 
-        await OrderService.CreateOrder(order);
-        CartService.Clear();
+        await OrderService.CreateOrderAsync(order);
 
-        // Optional: redirect to a confirmation page
+        // Clear the cart
+        if (Cart.UserId != null)
+        {
+            await CartService.ClearCartAsync(Cart.UserId);
+        }
+
+        // Optional: Navigate to confirmation page
         // NavigationManager.NavigateTo("/order-confirmation");
     }
 }

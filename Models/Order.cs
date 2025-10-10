@@ -1,32 +1,38 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 
 namespace RestaurantMS.Models
 {
-    // Represents a customer's order
     public class Order
     {
-        public int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
 
-        // List of items in the order
-        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+        [BsonElement("userId")]
+        public string? UserId { get; set; }
 
-        // Total price of the order
+        [BsonElement("items")]
+        public List<OrderItem> Items { get; set; } = new();
+
+        [BsonElement("total")]
         public decimal Total { get; set; }
 
-        // Current status of the order
+        [BsonElement("customerName")]
+        public string CustomerName { get; set; } = string.Empty;
+
+        [BsonElement("customerEmail")]
+        public string CustomerEmail { get; set; } = string.Empty;
+
+        [BsonElement("customerPhone")]
+        public string CustomerPhone { get; set; } = string.Empty;
+
+        [BsonElement("status")]
         public string Status { get; set; } = "Pending";
 
-        // Timestamp when the order was created
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        // Customer information (guest or authenticated)
-        public string CustomerName { get; set; }
-        public string CustomerEmail { get; set; }
-        public string CustomerPhone { get; set; }
-
-        // Optional: link to authenticated user
-        public string? UserId { get; set; }
-        // public virtual ApplicationUser? User { get; set; } // Uncomment if using Identity
+        [BsonElement("createdAt")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

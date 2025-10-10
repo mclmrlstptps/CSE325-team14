@@ -6,11 +6,9 @@ namespace RestaurantMS.Models
 {
     public class MenuItem
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("_id")] // Maps MongoDB's _id to Id
         public string? Id { get; set; }
 
         [BsonElement("name")]

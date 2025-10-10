@@ -1,53 +1,52 @@
+using MongoDB.Driver;
+using RestaurantMS.Models;
 using System.Collections.Generic;
 using System.Linq;
-using RestaurantMS.Data;
-using RestaurantMS.Models;
-
+using System.Threading.Tasks;
 
 namespace RestaurantMS.Services
 {
-    // Manages cart state for the customer
     public class CartService
     {
-        // List of items currently in the cart
-        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+        private readonly IMongoCollection<Cart> _carts;
 
-        // Add item to the cart or increase quantity if already exists
-        public void AddItem(MenuItem menuItem, int qty = 1)
+        public CartService(MongoDBService mongoDBService)
         {
-            var existing = Items.FirstOrDefault(i => i.MenuItemId == menuItem.Id);
-            if (existing != null)
+            _carts = mongoDBService.Carts;
+        }
+
+        public async Task<Cart?> GetCartByUserIdAsync(string userId) =>
+            await _carts.Find(c => c.UserId == userId).FirstOrDefaultAsync();
+
+        public async Task AddItemToCartAsync(string userId, OrderItem orderItem)
+        {
+            var cart = await GetCartByUserIdAsync(userId);
+
+            if (cart == null)
             {
-                existing.Quantity += qty;
+                cart = new Cart
+                {
+                    UserId = userId,
+                    Items = new List<OrderItem> { orderItem },
+                    Total = orderItem.Price * orderItem.Quantity
+                };
+                await _carts.InsertOneAsync(cart);
             }
             else
             {
-                Items.Add(new OrderItem
-                {
-                    MenuItemId = menuItem.Id,
-                    MenuItem = menuItem,
-                    Quantity = qty,
-                    Price = menuItem.Price
-                });
+                cart.Items.Add(orderItem);
+                cart.Total += orderItem.Price * orderItem.Quantity;
+                await _carts.ReplaceOneAsync(c => c.Id == cart.Id, cart);
             }
         }
 
-        // Update quantity of an item or remove if quantity <= 0
-        public void UpdateQuantity(int menuItemId, int qty)
+        public async Task ClearCartAsync(string userId) =>
+            await _carts.DeleteOneAsync(c => c.UserId == userId);
+
+        public async Task<decimal> GetTotalAsync(string userId)
         {
-            var item = Items.FirstOrDefault(i => i.MenuItemId == menuItemId);
-            if (item != null)
-            {
-                item.Quantity = qty;
-                if (item.Quantity <= 0)
-                    Items.Remove(item);
-            }
+            var cart = await GetCartByUserIdAsync(userId);
+            return cart?.Total ?? 0;
         }
-
-        // Calculate total price
-        public decimal GetTotal() => Items.Sum(i => i.Quantity * i.Price);
-
-        // Clear cart after checkout
-        public void Clear() => Items.Clear();
     }
 }
