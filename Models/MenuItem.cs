@@ -8,7 +8,6 @@ namespace RestaurantMS.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("_id")] // Maps MongoDB's _id to Id
         public string? Id { get; set; }
 
         [BsonElement("name")]
