@@ -1,6 +1,6 @@
-
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace RestaurantMS.Models
 {
@@ -24,5 +24,8 @@ namespace RestaurantMS.Models
 
         [BsonElement("imageUrl")]
         public string ImageUrl { get; set; } = string.Empty;
+
+        [BsonElement("reviews")]
+        public List<Review> Reviews { get; set; } = new List<Review>();
     }
 }
