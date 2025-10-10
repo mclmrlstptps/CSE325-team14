@@ -12,11 +12,9 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<MongoDBService>();
 
-<<<<<<< HEAD
+
 // import Auth service
-builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<MenuService>();
-=======
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<MenuItemService>();
@@ -30,7 +28,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "RestaurantMS API", Version = "v1" });
 });
->>>>>>> 9cc6b32b07f981f42dc13436f29a001e3c0ee699
 
 var app = builder.Build();
 
