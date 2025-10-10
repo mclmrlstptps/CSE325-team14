@@ -1,17 +1,13 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Collections.Generic;
 
 namespace RestaurantMS.Models
 {
     public class MenuItem
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         [BsonElement("name")]
         public string Name { get; set; } = string.Empty;
@@ -21,6 +17,9 @@ namespace RestaurantMS.Models
 
         [BsonElement("price")]
         public decimal Price { get; set; }
+
+        [BsonElement("imageUrl")]
+        public string ImageUrl { get; set; } = string.Empty;
 
         [BsonElement("reviews")]
         public List<Review> Reviews { get; set; } = new List<Review>();
