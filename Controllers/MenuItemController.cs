@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RestaurantMS.Models;
 using RestaurantMS.Services;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RestaurantMS.Controllers
@@ -10,98 +10,74 @@ namespace RestaurantMS.Controllers
     [Route("api/[controller]")]
     public class MenuItemController : ControllerBase
     {
-        private readonly MongoDBService _mongoService;
+        private readonly MenuItemService _menuItemService;
 
-        public MenuItemController(MongoDBService mongoService)
+        public MenuItemController(MenuItemService menuItemService)
         {
-            _mongoService = mongoService;
+            _menuItemService = menuItemService;
         }
 
-        // GET: api/MenuItem
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<List<MenuItem>>> GetAllMenuItems()
         {
-            var menuItems = await _mongoService.GetMenuItemsAsync();
-            return Ok(menuItems);
+            var items = await _menuItemService.GetAllMenuItemsAsync();
+            return Ok(items);
         }
 
-        // GET: api/MenuItem/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<ActionResult<MenuItem>> GetMenuItemById(string id)
         {
-            var menuItem = await _mongoService.GetMenuItemByIdAsync(id);
-            if (menuItem == null)
-                return NotFound(new { message = $"MenuItem with ID {id} not found." });
-
-            return Ok(menuItem);
+            var item = await _menuItemService.GetMenuItemByIdAsync(id);
+            if (item == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
+            return Ok(item);
         }
 
-        // POST: api/MenuItem
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] MenuItem menuItem)
+        public async Task<ActionResult> CreateMenuItem(MenuItem menuItem)
         {
-            if (menuItem == null)
-                return BadRequest(new { message = "MenuItem cannot be null." });
-
-            await _mongoService.CreateMenuItemAsync(menuItem);
-            return CreatedAtAction(nameof(GetById), new { id = menuItem.Id }, menuItem);
+            await _menuItemService.CreateMenuItemAsync(menuItem);
+            return CreatedAtAction(nameof(GetMenuItemById), new { id = menuItem.Id }, menuItem);
         }
 
-        // PUT: api/MenuItem/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] MenuItem menuItem)
+        public async Task<ActionResult> UpdateMenuItem(string id, MenuItem menuItem)
         {
-            if (menuItem == null)
-                return BadRequest(new { message = "MenuItem cannot be null." });
-
-            var existing = await _mongoService.GetMenuItemByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"MenuItem with ID {id} not found." });
+            var existing = await _menuItemService.GetMenuItemByIdAsync(id);
+            if (existing == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
 
             menuItem.Id = id;
-            await _mongoService.UpdateMenuItemAsync(id, menuItem);
-
+            await _menuItemService.UpdateMenuItemAsync(id, menuItem);
             return NoContent();
         }
 
-        // DELETE: api/MenuItem/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<ActionResult> DeleteMenuItem(string id)
         {
-            var existing = await _mongoService.GetMenuItemByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"MenuItem with ID {id} not found." });
+            var existing = await _menuItemService.GetMenuItemByIdAsync(id);
+            if (existing == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
 
-            await _mongoService.DeleteMenuItemAsync(id);
+            await _menuItemService.DeleteMenuItemAsync(id);
             return NoContent();
         }
 
-        // POST: api/MenuItem/{id}/review
-        [HttpPost("{id}/review")]
-        public async Task<IActionResult> AddReview(string id, [FromBody] Review review)
+        [HttpPost("{id}/reviews")]
+        public async Task<ActionResult> AddReview(string id, Review review)
         {
-            if (review == null)
-                return BadRequest(new { message = "Review cannot be null." });
+            var menuItem = await _menuItemService.GetMenuItemByIdAsync(id);
+            if (menuItem == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
 
-            var menuItem = await _mongoService.GetMenuItemByIdAsync(id);
-            if (menuItem == null)
-                return NotFound(new { message = $"MenuItem with ID {id} not found." });
-
-            review.CreatedAt = DateTime.UtcNow;
-            await _mongoService.AddReviewToMenuItemAsync(id, review);
-
-            return Ok(review);
+            await _menuItemService.AddReviewAsync(id, review);
+            return Ok();
         }
 
-        // GET: api/MenuItem/{id}/reviews
         [HttpGet("{id}/reviews")]
-        public async Task<IActionResult> GetReviews(string id)
+        public async Task<ActionResult<List<Review>>> GetReviewsForMenuItem(string id)
         {
-            var menuItem = await _mongoService.GetMenuItemByIdAsync(id);
-            if (menuItem == null)
-                return NotFound(new { message = $"MenuItem with ID {id} not found." });
+            var menuItem = await _menuItemService.GetMenuItemByIdAsync(id);
+            if (menuItem == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
 
-            return Ok(menuItem.Reviews);
+            var reviews = await _menuItemService.GetReviewsForMenuItemAsync(id);
+            return Ok(reviews);
         }
     }
 }

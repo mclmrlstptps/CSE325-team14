@@ -1,23 +1,29 @@
-using System;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace RestaurantMS.Models
 {
-    // Represents a single menu item in an order
     public class OrderItem
     {
-        public int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; } // _id
 
-        public int OrderId { get; set; }
-        public virtual Order Order { get; set; }
+        [BsonElement("orderId")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? OrderId { get; set; }
 
-        // MenuItem being ordered
-        public int MenuItemId { get; set; }
-        public virtual MenuItem MenuItem { get; set; }
+        [BsonElement("menuItemId")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? MenuItemId { get; set; }
 
-        // Quantity of this item
+        [BsonElement("menuItem")]
+        public MenuItem? MenuItem { get; set; }
+
+        [BsonElement("quantity")]
         public int Quantity { get; set; } = 1;
 
-        // Price at the time of ordering
+        [BsonElement("price")]
         public decimal Price { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 GET http://localhost:5000/api/MenuItem
 Content-Type: application/json
 
+###
 
 ### Create a new menu item
 POST http://localhost:5000/api/MenuItem
@@ -16,18 +17,18 @@ Content-Type: application/json
 
 ###
 
-### Get newly created menu item by ID (replace NEW_ID after creation)
-GET http://localhost:5000/api/MenuItem/NEW ITEM ID
+### Get menu item by ID
+GET http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001
 Content-Type: application/json
 
 ###
 
 ### Update a menu item by ID
-PUT http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1002
+PUT http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001
 Content-Type: application/json
 
 {
-  "name": "Grilled Chicken Sandwich Deluxe",
+  "name": "Yummy Hillary",
   "description": "Juicy grilled chicken with lettuce, tomato, and special sauce.",
   "price": 7.49,
   "reviews": []
@@ -36,13 +37,13 @@ Content-Type: application/json
 ###
 
 ### Delete a menu item by ID
-DELETE http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1005
+DELETE http://localhost:5000/api/MenuItem/(Add an ID for an existing menuitem)
 Content-Type: application/json
 
 ###
 
 ### Add a review to a menu item
-POST http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001/review
+POST http://localhost:5000/api/MenuItem/671f5b92f21a1a1b1d9a1001/reviews
 Content-Type: application/json
 
 {
