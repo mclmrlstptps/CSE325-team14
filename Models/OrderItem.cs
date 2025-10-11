@@ -5,13 +5,13 @@ namespace RestaurantMS.Models
 {
     public class OrderItem
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; } // _id
+        // [BsonId]
+        // [BsonRepresentation(BsonType.ObjectId)]
+        // public string? Id { get; set; } // _id
 
-        [BsonElement("orderId")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? OrderId { get; set; }
+        // [BsonElement("orderId")]
+        // [BsonRepresentation(BsonType.ObjectId)]
+        // public string? OrderId { get; set; }
 
         [BsonElement("menuItemId")]
         [BsonRepresentation(BsonType.ObjectId)]
