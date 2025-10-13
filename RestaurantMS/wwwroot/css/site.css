@@ -1,0 +1,151 @@
+@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+/* Base font */
+html, body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Links */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+}
+
+/* Auth container and card */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    padding: 1rem;
+}
+
+.auth-card, .auth-form {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 15px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-card:hover, .auth-form:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Form headings */
+.auth-card h2, .auth-form h2, h3.text-center {
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form groups */
+.form-group {
+    position: relative;
+    margin-bottom: 1.75rem;
+}
+
+/* Form controls */
+.form-control, .form-select, .auth-form input {
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    width: 100%;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus, .auth-form input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+/* Floating labels */
+label.form-label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: #aaa;
+    font-weight: 500;
+    pointer-events: none;
+    transition: 0.2s ease all;
+}
+
+.form-control:focus + label.form-label,
+.form-control:not(:placeholder-shown) + label.form-label {
+    top: -0.5rem;
+    left: 0.75rem;
+    font-size: 0.8rem;
+    color: #007bff;
+    background: #fff;
+    padding: 0 0.25rem;
+}
+
+/* Buttons */
+.btn, .auth-form button {
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary, .auth-form button {
+    background: #007bff;
+    border: none;
+    color: #fff;
+}
+
+.btn-primary:hover, .auth-form button:hover {
+    background: #0056b3;
+}
+
+/* Form links */
+.auth-form .form-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-form .form-link:hover {
+    text-decoration: underline;
+}
+
+/* Validation messages */
+.validation-message, .auth-form .error-message {
+    color: #ff6b6b;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    .auth-card, .auth-form {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+}
