@@ -1,0 +1,242 @@
+@page "/orders/details/{orderId}"
+@layout MainLayout
+@using RestaurantMS.Models
+@using RestaurantMS.Services
+@inject OrderService OrderService
+@inject NavigationManager Navigation
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Order Details</h3>
+        <button class="btn btn-primary" @onclick="NavigateBack">
+            <i class="bi bi-arrow-left"></i> Back to Orders
+        </button>
+    </div>
+
+    @if (loading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (order == null)
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> Order not found.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Order #@order.Id?.Substring(Math.Max(0, order.Id.Length - 8))</h5>
+                        <span class="badge @GetStatusBadgeClass(order.Status) fs-6">@order.Status</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Customer Information</h6>
+                                <p class="mb-1"><i class="bi bi-person"></i> <strong>@order.CustomerName</strong></p>
+                                <p class="mb-1"><i class="bi bi-envelope"></i> @order.CustomerEmail</p>
+                                <p class="mb-1"><i class="bi bi-telephone"></i> @order.CustomerPhone</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Order Information</h6>
+                                <p class="mb-1"><i class="bi bi-clock"></i> @order.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")</p>
+                                <p class="mb-1"><i class="bi bi-box"></i> @order.Items.Count item(s)</p>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <h6 class="mb-3">Order Items</h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-end">Price</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in order.Items)
+                                    {
+                                        <tr>
+                                            <td>@(item.MenuItem?.Name ?? "Unknown Item")</td>
+                                            <td class="text-center">@item.Quantity</td>
+                                            <td class="text-end">$@item.Price.ToString("F2")</td>
+                                            <td class="text-end">$@((item.Price * item.Quantity).ToString("F2"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-light">
+                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                        <td class="text-end"><strong class="text-primary fs-5">$@order.Total.ToString("F2")</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-gear"></i> Order Actions</h6>
+                    </div>
+                    <div class="card-body">
+                        @if (statusMessage != null)
+                        {
+                            <div class="alert @(statusMessage.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show">
+                                @statusMessage.Message
+                            </div>
+                        }
+
+                        <h6 class="mb-3">Update Status</h6>
+                        <div class="d-grid gap-2">
+                            @if (order.Status == "Pending")
+                            {
+                                <button class="btn btn-info" @onclick='() => UpdateStatus("Preparing")'>
+                                    <i class="bi bi-hourglass-split"></i> Start Preparing
+                                </button>
+                                <button class="btn btn-outline-danger" @onclick='() => UpdateStatus("Cancelled")'>
+                                    <i class="bi bi-x-circle"></i> Cancel Order
+                                </button>
+                            }
+                            else if (order.Status == "Preparing")
+                            {
+                                <button class="btn btn-primary" @onclick='() => UpdateStatus("Ready")'>
+                                    <i class="bi bi-check-circle"></i> Mark as Ready
+                                </button>
+                                <button class="btn btn-outline-danger" @onclick='() => UpdateStatus("Cancelled")'>
+                                    <i class="bi bi-x-circle"></i> Cancel Order
+                                </button>
+                            }
+                            else if (order.Status == "Ready")
+                            {
+                                <button class="btn btn-success" @onclick='() => UpdateStatus("Completed")'>
+                                    <i class="bi bi-check-all"></i> Complete Order
+                                </button>
+                            }
+                            else if (order.Status == "Completed")
+                            {
+                                <div class="alert alert-success mb-0">
+                                    <i class="bi bi-check-circle"></i> Order completed successfully!
+                                </div>
+                            }
+                            else if (order.Status == "Cancelled")
+                            {
+                                <div class="alert alert-danger mb-0">
+                                    <i class="bi bi-x-circle"></i> This order has been cancelled.
+                                </div>
+                            }
+                        </div>
+
+                        <hr class="my-3" />
+
+                        <div class="d-grid">
+                            <button class="btn btn-outline-secondary" @onclick="NavigateBack">
+                                <i class="bi bi-arrow-left"></i> Back to Orders
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? OrderId { get; set; }
+
+    private RestaurantMS.Models.Order? order;
+    private bool loading = true;
+    private StatusMessage? statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrder();
+    }
+
+    private async Task LoadOrder()
+    {
+        loading = true;
+        statusMessage = null;
+        try
+        {
+            if (!string.IsNullOrEmpty(OrderId))
+            {
+                order = await OrderService.GetOrderByIdAsync(OrderId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading order: {ex.Message}");
+            statusMessage = new StatusMessage { IsSuccess = false, Message = "Error loading order details" };
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task UpdateStatus(string newStatus)
+    {
+        if (order == null || string.IsNullOrEmpty(OrderId)) return;
+
+        try
+        {
+            order.Status = newStatus;
+            await OrderService.UpdateOrderAsync(OrderId, order);
+            statusMessage = new StatusMessage 
+            { 
+                IsSuccess = true, 
+                Message = $"Order status updated to {newStatus}" 
+            };
+            await LoadOrder();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = new StatusMessage 
+            { 
+                IsSuccess = false, 
+                Message = $"Error updating status: {ex.Message}" 
+            };
+            Console.WriteLine($"Error updating order status: {ex.Message}");
+        }
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo("/orders");
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning text-dark",
+            "Preparing" => "bg-info",
+            "Ready" => "bg-primary",
+            "Completed" => "bg-success",
+            "Cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private class StatusMessage
+    {
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+}
