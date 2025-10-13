@@ -1,0 +1,57 @@
+﻿@page "/"
+@layout MainLayout
+
+<section class="hero-section d-flex flex-column justify-content-center align-items-center text-center">
+    <div class="hero-content animate-fade">
+        <img src="images/restaurant-illustration.svg" alt="Restaurant Illustration" class="img-fluid mb-4 animate-float" style="max-width: 400px;" />
+
+        <h1 class="display-4 fw-bold mb-3">Welcome to <span class="brand-text">RestaurantMS</span></h1>
+        <p class="lead mb-4">
+            The all-in-one platform to <strong>order meals online</strong>, 
+            <strong>manage supplies</strong>, and <strong>grow your restaurant</strong>.
+        </p>
+        
+        <div>
+            <a class="btn btn-primary btn-lg me-2 animate-scale" href="/login">Login</a>
+            <a class="btn btn-outline-primary btn-lg animate-scale" href="/register">Register</a>
+        </div>
+    </div>
+</section>
+
+<section class="container my-5">
+    <h2 class="text-center mb-4">Popular Menu Items</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card menu-card animate-fade-up">
+                <img src="images/pizza.jpg" class="card-img-top" alt="Pizza">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Deluxe Pizza</h5>
+                    <p class="card-text">Crispy crust topped with fresh vegetables, mozzarella & pepperoni.</p>
+                    <button class="btn btn-primary">Order Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card menu-card animate-fade-up delay-1">
+                <img src="images/burger.jpg" class="card-img-top" alt="Burger">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Classic Burger</h5>
+                    <p class="card-text">Juicy beef patty with cheese, lettuce, tomato, and signature sauce.</p>
+                    <button class="btn btn-primary">Order Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card menu-card animate-fade-up delay-2">
+                <img src="images/pasta.jpg" class="card-img-top" alt="Pasta">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Creamy Pasta</h5>
+                    <p class="card-text">Penne pasta tossed in a creamy Alfredo sauce with mushrooms.</p>
+                    <button class="btn btn-primary">Order Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
