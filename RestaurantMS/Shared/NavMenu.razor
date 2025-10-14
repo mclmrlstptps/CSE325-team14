@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateProvider AuthStateProvider
+@inject RestaurantMS.Services.CustomAuthStateProvider CustomAuthStateProvider
 @inject NavigationManager Navigation
+@implements IDisposable
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container">
@@ -13,36 +15,77 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
 
-                @if (isAuthenticated)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <button class="btn btn-link nav-link" @onclick="Logout">Logout</button>
-                    </li>
-                }
-                else
-                {
-                    <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-                }
+                <AuthorizeView>
+                    <Authorized>
+                        <!-- Show user name -->
+                        <li class="nav-item">
+                            <span class="nav-link text-muted">Welcome, @context.User.Identity?.Name</span>
+                        </li>
+
+                        <!-- Manager Links -->
+                        <AuthorizeView Roles="Manager" Context="managerContext">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/menu">Manage Menu</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dashboard">Dashboard</a>
+                            </li>
+                        </AuthorizeView>
+
+                        <!-- Employee Links -->
+                        <AuthorizeView Roles="Employee,Manager" Context="employeeContext">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/orders">Orders</a>
+                            </li>
+                        </AuthorizeView>
+
+                        <!-- Customer Links -->
+                        <AuthorizeView Roles="Customer" Context="customerContext">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/shop">Shop</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/my-orders">My Orders</a>
+                            </li>
+                        </AuthorizeView>
+
+                        <!-- Logout Button -->
+                        <li class="nav-item">
+                            <button class="btn btn-link nav-link" @onclick="HandleLogout">Logout</button>
+                        </li>
+                    </Authorized>
+                    <NotAuthorized>
+                        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+                    </NotAuthorized>
+                </AuthorizeView>
             </ul>
         </div>
     </div>
 </nav>
 
 @code {
-    private bool isAuthenticated;
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        // Subscribe to authentication state changes
+        AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
     }
 
-    private void Logout()
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
     {
-        Navigation.NavigateTo("/Account/Logout", true);
+        // Force re-render when authentication state changes
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleLogout()
+    {
+        await CustomAuthStateProvider.MarkUserAsLoggedOut();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from authentication state changes
+        AuthStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 }
