@@ -12,6 +12,6 @@ namespace RestaurantMS.Data
             _database = client.GetDatabase("RestaurantMS"); 
         }
 
-        public IMongoCollection<ApplicationUser> Users => _database.GetCollection<ApplicationUser>("Users");
+        public IMongoCollection<User> Users => _database.GetCollection<User>("Users");
     }
 }
