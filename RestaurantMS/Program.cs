@@ -17,8 +17,13 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 });
 
 builder.Services.AddScoped<MongoDbContext>();
+builder.Services.AddScoped<MongoDBService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<MenuService>();
+builder.Services.AddScoped<MenuItemService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
