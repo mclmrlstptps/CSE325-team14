@@ -28,7 +28,7 @@ API Endpoints
 │   ├── PUT /{userId}/update   → CartController.UpdateQuantity(userId, CartItemRequest)
 │   └── DELETE /{userId}/clear → CartController.ClearCart(userId)
 
-FOLDER STRUCTURE:
+FOLDER STRUCTURE; not complete but this is how it's structured:
 
 RestaurantMS/
 │
@@ -49,6 +49,7 @@ RestaurantMS/
 ├── Services/
 │   ├── CartService.cs
 │   ├── MenuItemService.cs
+|   |---MenuService.cs
 │   ├── OrderService.cs
 │   ├── UserService.cs
 │   └── MongoDBService.cs
