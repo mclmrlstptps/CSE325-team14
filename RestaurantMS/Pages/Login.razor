@@ -1,59 +1,7 @@
 @page "/login"
-<<<<<<< HEAD:Pages/Login.razor
 @using RestaurantMS.Models
 @inject AuthService AuthService
 @inject NavigationManager Navigation
-
-<h3>Login</h3>
-
-<EditForm OnValidSubmit="HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div>
-        <label>Email:</label>
-        <InputText @bind-Value="email" type="email" />
-    </div>
-
-    <div>
-        <label>Password:</label>
-        <InputText @bind-Value="password" type="password" />
-    </div>
-
-    <button type="submit">Login</button>
-</EditForm>
-
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <p style="color:red">@errorMessage</p>
-}
-
-@code {
-    private string email = string.Empty;
-    private string password = string.Empty;
-    private string errorMessage = string.Empty;
-
-    private async Task HandleLogin()
-    {
-        try
-        {
-            var result = await AuthService.LoginAsync(email, password);
-            if (result != null)
-            {
-                // Optionally, save token to local storage or session storage
-                // For now, just navigate to homepage or menu page
-                Navigation.NavigateTo("/menu");
-            }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
-    }
-=======
-@inject RestaurantMS.Services.AuthService AuthService
-@inject NavigationManager Navigation
-@using RestaurantMS.Models
 
 <div class="auth-container">
     <div class="auth-card">
@@ -103,11 +51,4 @@
             message = "Invalid email or password.";
         }
     }
-
-    private class LoginModel
-    {
-        public string email { get; set; } = string.Empty;
-        public string password { get; set; } = string.Empty;
-    }
->>>>>>> 517d0621a752bc05665cb323dbf9e254a43f7c37:RestaurantMS/Pages/Login.razor
 }
