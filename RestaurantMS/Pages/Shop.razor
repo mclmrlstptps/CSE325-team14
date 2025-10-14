@@ -1,0 +1,53 @@
+@page "/shop"
+@attribute [Authorize(Roles = "Customer")]
+
+<div class="container mt-4">
+    <h1>Our Menu</h1>
+    <p class="lead">Browse our delicious menu items and place your order!</p>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="/images/pizza.jpg" class="card-img-top" alt="Pizza" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">Deluxe Pizza</h5>
+                    <p class="card-text">Crispy crust topped with fresh vegetables, mozzarella & pepperoni.</p>
+                    <p class="card-text"><strong>$12.99</strong></p>
+                    <button class="btn btn-primary">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="/images/burger.jpg" class="card-img-top" alt="Burger" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">Classic Burger</h5>
+                    <p class="card-text">Juicy beef patty with cheese, lettuce, tomato, and signature sauce.</p>
+                    <p class="card-text"><strong>$9.99</strong></p>
+                    <button class="btn btn-primary">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="/images/pasta.jpg" class="card-img-top" alt="Pasta" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">Creamy Pasta</h5>
+                    <p class="card-text">Penne pasta tossed in a creamy Alfredo sauce with mushrooms.</p>
+                    <p class="card-text"><strong>$11.99</strong></p>
+                    <button class="btn btn-primary">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="/my-orders" class="btn btn-outline-primary">View My Orders</a>
+    </div>
+</div>
+
+@code {
+    // Shop logic can be added here
+}
