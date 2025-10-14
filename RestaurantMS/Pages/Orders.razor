@@ -1,0 +1,49 @@
+@page "/orders"
+@attribute [Authorize(Roles = "Employee,Manager")]
+
+<div class="container mt-4">
+    <h1>Order Management</h1>
+    <p class="lead">Manage incoming orders and update their status.</p>
+    
+    <div class="alert alert-info">
+        <h5>Order Management Coming Soon!</h5>
+        <p>This feature will show all incoming orders and allow you to update their status.</p>
+        <p>Orders will be displayed in real-time as customers place them.</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Orders</h5>
+                    <p class="card-text">0 orders waiting</p>
+                    <button class="btn btn-primary" disabled>View Orders</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">In Progress</h5>
+                    <p class="card-text">0 orders being prepared</p>
+                    <button class="btn btn-warning" disabled>View Orders</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ready for Pickup</h5>
+                    <p class="card-text">0 orders ready</p>
+                    <button class="btn btn-success" disabled>View Orders</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Order management logic can be added here
+}
