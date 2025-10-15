@@ -9,24 +9,34 @@
 
         @if (!string.IsNullOrEmpty(message))
         {
-            <div class="error-message">@message</div>
+            <div class="alert alert-danger">@message</div>
         }
 
         <EditForm Model="model" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <div class="form-group">
-                <InputText @bind-Value="model.email" type="email" class="form-control" placeholder=" " />
+            <div class="form-group mb-3">
                 <label class="form-label">Email</label>
+                <InputText @bind-Value="model.Email" type="email" class="form-control" placeholder="Enter your email" />
             </div>
 
-            <div class="form-group">
-                <InputText @bind-Value="model.password" type="password" class="form-control" placeholder=" " />
+            <div class="form-group mb-3">
                 <label class="form-label">Password</label>
+                <InputText @bind-Value="model.Password" type="password" class="form-control" placeholder="Enter your password" />
             </div>
 
-            <button type="submit" class="btn btn-primary mt-3">Login</button>
+            <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>Logging in...</span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </button>
         </EditForm>
 
         <div class="mt-3 text-center">
@@ -38,17 +48,53 @@
 @code {
     private LoginModel model = new();
     private string message = string.Empty;
+    private bool isLoading = false;
 
     private async Task HandleLogin()
     {
-        var success = await AuthService.LoginAsync(model.email, model.password);
-        if (success)
+        isLoading = true;
+        message = string.Empty;
+        
+        try
         {
-            Navigation.NavigateTo("/"); // Redirect to home/dashboard
+            var success = await AuthService.LoginAsync(model.Email, model.Password);
+            if (success)
+            {
+                // Get user details to extract role
+                var user = await UserService.GetUserByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    // Mark user as authenticated in the auth state provider
+                    await AuthStateProvider.MarkUserAsAuthenticated(
+                        user.Email, 
+                        user.Role,
+                        user.Id,
+                        user.Name
+                    );
+
+                    // Redirect based on role
+                    Navigation.NavigateTo(user.Role switch
+                    {
+                        "Manager" => "/menu",
+                        "Employee" => "/",
+                        "Customer" => "/",
+                        _ => "/"
+                    }, forceLoad: true);
+                }
+            }
+            else
+            {
+                message = "Invalid email or password.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            message = "Invalid email or password.";
+            message = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }

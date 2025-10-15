@@ -1,0 +1,39 @@
+@page "/my-orders"
+@attribute [Authorize(Roles = "Customer")]
+
+<div class="container mt-4">
+    <h1>My Orders</h1>
+    <p class="lead">Track your order history and current orders.</p>
+    
+    <div class="alert alert-info">
+        <h5>Order Tracking Coming Soon!</h5>
+        <p>This feature will show your order history and allow you to track current orders.</p>
+        <p>For now, you can browse our <a href="/shop">menu</a> to place new orders.</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Orders</h5>
+                    <p class="card-text">No orders yet. Start shopping to see your orders here!</p>
+                    <a href="/shop" class="btn btn-primary">Start Shopping</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Order Status</h5>
+                    <p class="card-text">Track your current orders and their status.</p>
+                    <button class="btn btn-outline-primary" disabled>Track Orders</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Order tracking logic can be added here
+}

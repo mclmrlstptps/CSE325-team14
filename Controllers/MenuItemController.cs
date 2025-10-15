@@ -17,6 +17,7 @@ namespace RestaurantMS.Controllers
             _menuItemService = menuItemService;
         }
 
+        // GET: api/MenuItem
         [HttpGet]
         public async Task<ActionResult<List<MenuItem>>> GetAllMenuItems()
         {
@@ -24,59 +25,62 @@ namespace RestaurantMS.Controllers
             return Ok(items);
         }
 
-        [HttpGet("{id}")]
+        // GET: api/MenuItem/{id}
+        [HttpGet("{id:length(24)}", Name = "GetMenuItem")]
         public async Task<ActionResult<MenuItem>> GetMenuItemById(string id)
         {
             var item = await _menuItemService.GetMenuItemByIdAsync(id);
-            if (item == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
+            if (item == null)
+                return NotFound();
+
             return Ok(item);
         }
 
+        // POST: api/MenuItem
         [HttpPost]
-        public async Task<ActionResult> CreateMenuItem(MenuItem menuItem)
+        public async Task<ActionResult> CreateMenuItem([FromBody] MenuItem menuItem)
         {
             await _menuItemService.CreateMenuItemAsync(menuItem);
-            return CreatedAtAction(nameof(GetMenuItemById), new { id = menuItem.Id }, menuItem);
+            return CreatedAtRoute("GetMenuItem", new { id = menuItem.Id }, menuItem);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateMenuItem(string id, MenuItem menuItem)
+        // PUT: api/MenuItem/{id}
+        [HttpPut("{id:length(24)}")]
+        public async Task<IActionResult> UpdateMenuItem(string id, [FromBody] MenuItem menuItem)
         {
             var existing = await _menuItemService.GetMenuItemByIdAsync(id);
-            if (existing == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
+            if (existing == null)
+                return NotFound();
 
-            menuItem.Id = id;
             await _menuItemService.UpdateMenuItemAsync(id, menuItem);
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteMenuItem(string id)
+        // DELETE: api/MenuItem/{id}
+        [HttpDelete("{id:length(24)}")]
+        public async Task<IActionResult> DeleteMenuItem(string id)
         {
             var existing = await _menuItemService.GetMenuItemByIdAsync(id);
-            if (existing == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
+            if (existing == null)
+                return NotFound();
 
             await _menuItemService.DeleteMenuItemAsync(id);
             return NoContent();
         }
 
-        [HttpPost("{id}/reviews")]
-        public async Task<ActionResult> AddReview(string id, Review review)
+        // POST: api/MenuItem/{menuItemId}/review
+        [HttpPost("{menuItemId:length(24)}/review")]
+        public async Task<IActionResult> AddReview(string menuItemId, [FromBody] Review review)
         {
-            var menuItem = await _menuItemService.GetMenuItemByIdAsync(id);
-            if (menuItem == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
-
-            await _menuItemService.AddReviewAsync(id, review);
-            return Ok();
+            await _menuItemService.AddReviewAsync(menuItemId, review);
+            return Ok("Review added successfully.");
         }
 
-        [HttpGet("{id}/reviews")]
-        public async Task<ActionResult<List<Review>>> GetReviewsForMenuItem(string id)
+        // GET: api/MenuItem/{menuItemId}/reviews
+        [HttpGet("{menuItemId:length(24)}/reviews")]
+        public async Task<ActionResult<List<Review>>> GetReviews(string menuItemId)
         {
-            var menuItem = await _menuItemService.GetMenuItemByIdAsync(id);
-            if (menuItem == null) return NotFound($"Menu item with ID '{id}' not found or invalid ID.");
-
-            var reviews = await _menuItemService.GetReviewsForMenuItemAsync(id);
+            var reviews = await _menuItemService.GetReviewsForMenuItemAsync(menuItemId);
             return Ok(reviews);
         }
     }

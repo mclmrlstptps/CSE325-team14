@@ -1,14 +1,20 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
+using RestaurantMS.Services;
 
 namespace RestaurantMS.Pages.Account
 {
     public class LogoutModel : PageModel
     {
+        private readonly CustomAuthStateProvider _authStateProvider;
+
+        public LogoutModel(CustomAuthStateProvider authStateProvider)
+        {
+            _authStateProvider = authStateProvider;
+        }
+
         public async Task OnGetAsync()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _authStateProvider.MarkUserAsLoggedOut();
             Response.Redirect("/");
         }
     }

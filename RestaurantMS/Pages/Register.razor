@@ -9,44 +9,54 @@
 
         @if (!string.IsNullOrEmpty(message))
         {
-            <div class="error-message">@message</div>
+            <div class="alert alert-danger">@message</div>
         }
 
         <EditForm Model="model" OnValidSubmit="HandleRegister">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-            <div class="form-group">
-                <InputText @bind-Value="model.name" class="form-control" placeholder=" " />
+            <div class="form-group mb-3">
                 <label class="form-label">Name</label>
+                <InputText @bind-Value="model.Name" class="form-control" placeholder="Enter your full name" />
             </div>
 
-            <div class="form-group">
-                <InputText @bind-Value="model.email" type="email" class="form-control" placeholder=" " />
+            <div class="form-group mb-3">
                 <label class="form-label">Email</label>
+                <InputText @bind-Value="model.Email" type="email" class="form-control" placeholder="Enter your email" />
             </div>
 
-            <div class="form-group">
-                <InputText @bind-Value="model.password" type="password" class="form-control" placeholder=" " />
+            <div class="form-group mb-3">
                 <label class="form-label">Password</label>
+                <InputText @bind-Value="model.Password" type="password" class="form-control" placeholder="Enter password" />
             </div>
 
-            <div class="form-group">
-                <InputText @bind-Value="model.confirmPassword" type="password" class="form-control" placeholder=" " />
+            <div class="form-group mb-3">
                 <label class="form-label">Confirm Password</label>
+                <InputText @bind-Value="model.ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
             </div>
 
-            <div class="form-group">
-                <InputSelect @bind-Value="model.role" class="form-control">
+            <div class="form-group mb-3">
+                <label class="form-label">Role</label>
+                <InputSelect @bind-Value="model.Role" class="form-control">
                     <option value="">Select Role</option>
                     <option value="Customer">Customer</option>
                     <option value="Employee">Employee</option>
                     <option value="Manager">Manager</option>
                 </InputSelect>
-                <label class="form-label">Role</label>
             </div>
 
-            <button type="submit" class="btn btn-primary mt-3">Register</button>
+            <button type="submit" class="btn btn-primary w-100" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    <span>Registering...</span>
+                }
+                else
+                {
+                    <span>Register</span>
+                }
+            </button>
         </EditForm>
 
         <div class="mt-3 text-center">
@@ -58,20 +68,21 @@
 @code {
     private RegisterModel model = new();
     private string message = string.Empty;
+    private bool isLoading = false;
 
     private async Task HandleRegister()
     {
-        if (string.IsNullOrWhiteSpace(model.role))
-        {
-            message = "Please select a role.";
-            return;
-        }
+        isLoading = true;
+        message = string.Empty;
 
-        if (model.password != model.confirmPassword)
+        try
         {
-            message = "Passwords do not match.";
-            return;
-        }
+            // Validation
+            if (string.IsNullOrWhiteSpace(model.Role))
+            {
+                message = "Please select a role.";
+                return;
+            }
 
         var newUser = new User
         {
@@ -80,23 +91,42 @@
             Role = model.role
         };
 
-        var success = await AuthService.RegisterAsync(newUser, model.password);
-        if (success)
-        {
-            Navigation.NavigateTo("/login");
+            var newUser = new ApplicationUser
+            {
+                Name = model.Name,
+                Email = model.Email.ToLowerInvariant(),
+                Role = model.Role
+            };
+
+            var success = await AuthService.RegisterAsync(newUser, model.Password);
+            if (success)
+            {
+                // Optionally auto-login after registration
+                message = "Registration successful! Redirecting to login...";
+                await Task.Delay(1000);
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                message = "Registration failed. Email may already exist.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            message = "Registration failed. Email may already exist.";
+            message = $"Registration failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
     private class RegisterModel
     {
-        public string name { get; set; } = string.Empty;
-        public string email { get; set; } = string.Empty;
-        public string password { get; set; } = string.Empty;
-        public string confirmPassword { get; set; } = string.Empty;
-        public string role { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 }

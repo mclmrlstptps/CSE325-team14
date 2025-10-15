@@ -1,0 +1,342 @@
+@page "/orders/create"
+@using RestaurantMS.Models
+@using RestaurantMS.Services
+@inject OrderService OrderService
+@inject MenuItemService MenuItemService
+@inject NavigationManager Navigation
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Create New Order</h3>
+        <button class="btn btn-primary" @onclick="Cancel" disabled="@creating">
+            <i class="bi bi-x-circle"></i> Cancel
+        </button>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Customer Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Customer Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" @bind="customerName"
+                                placeholder="First and Last Name" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Customer Phone <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" @bind="customerPhone"
+                                placeholder="+1 (555) 123-4567" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Customer Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" @bind="customerEmail"
+                            placeholder="customer@example.com" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-cart"></i> Select Menu Items</h5>
+                </div>
+                <div class="card-body">
+                    @if (loadingMenu)
+                    {
+                        <div class="text-center py-5">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading menu...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading menu items...</p>
+                        </div>
+                    }
+                    else if (menuItems == null || menuItems.Count == 0)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> No menu items available. Please add menu items first.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @foreach (var item in menuItems)
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 @(selectedItems.ContainsKey(item.Id) ? "border-primary" : "")">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <h6 class="card-title mb-1">@item.Name</h6>
+                                                    <p class="card-text text-muted small mb-0">@item.Description</p>
+                                                </div>
+                                                @if (selectedItems.ContainsKey(item.Id))
+                                                {
+                                                    <span class="badge bg-primary">Selected</span>
+                                                }
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <strong class="text-primary">$@item.Price.ToString("F2")</strong>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-danger"
+                                                        @onclick="() => DecreaseQuantity(item.Id)"
+                                                        disabled="@(!selectedItems.ContainsKey(item.Id))">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary" disabled style="min-width: 45px;">
+                                                        @(selectedItems.ContainsKey(item.Id) ? selectedItems[item.Id] : 0)
+                                                    </button>
+                                                    <button class="btn btn-outline-success"
+                                                        @onclick="() => IncreaseQuantity(item)">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card position-sticky" style="top: 20px;">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-receipt"></i> Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    @if (selectedItems.Count == 0)
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-cart-x fs-1"></i>
+                            <p class="mt-2">No items selected</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            @if (menuItems != null)
+                            {
+                                @foreach (var kvp in selectedItems)
+                                {
+                                    var item = menuItems.FirstOrDefault(m => m.Id == kvp.Key);
+                                    if (item != null)
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold">@item.Name</div>
+                                                <small class="text-muted">@kvp.Value x $@item.Price.ToString("F2")</small>
+                                            </div>
+                                            <div class="text-end ms-2">
+                                                <strong>$@((item.Price * kvp.Value).ToString("F2"))</strong>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Total:</h5>
+                            <h4 class="mb-0 text-primary">$@CalculateTotal().ToString("F2")</h4>
+                        </div>
+                    }
+
+                    @if (errorMessage != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i> @errorMessage
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" @onclick="SubmitOrder"
+                            disabled="@(creating || selectedItems.Count == 0 || string.IsNullOrWhiteSpace(customerName))">
+                            @if (creating)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <span>Creating Order...</span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span>Create Order</span>
+                            }
+                        </button>
+                        <button class="btn btn-outline-secondary" @onclick="Cancel" disabled="@creating">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<MenuItem> menuItems = new();
+    private Dictionary<string, int> selectedItems = new();
+    private string customerName = string.Empty;
+    private string customerEmail = string.Empty;
+    private string customerPhone = string.Empty;
+    private bool loadingMenu = true;
+    private bool creating = false;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMenuItems();
+    }
+
+    private async Task LoadMenuItems()
+    {
+        loadingMenu = true;
+        try
+        {
+            menuItems = await MenuItemService.GetAllMenuItemsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading menu items: {ex.Message}");
+            errorMessage = "Failed to load menu items. Please try again.";
+        }
+        finally
+        {
+            loadingMenu = false;
+        }
+    }
+
+    private void IncreaseQuantity(MenuItem item)
+    {
+        if (item.Id != null)
+        {
+            if (selectedItems.ContainsKey(item.Id))
+            {
+                selectedItems[item.Id]++;
+            }
+            else
+            {
+                selectedItems[item.Id] = 1;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private void DecreaseQuantity(string? itemId)
+    {
+        if (itemId != null && selectedItems.ContainsKey(itemId))
+        {
+            selectedItems[itemId]--;
+            if (selectedItems[itemId] <= 0)
+            {
+                selectedItems.Remove(itemId);
+            }
+            StateHasChanged();
+        }
+    }
+
+    private decimal CalculateTotal()
+    {
+        decimal total = 0;
+        if (menuItems != null)
+        {
+            foreach (var kvp in selectedItems)
+            {
+                var item = menuItems.FirstOrDefault(m => m.Id == kvp.Key);
+                if (item != null)
+                {
+                    total += item.Price * kvp.Value;
+                }
+            }
+        }
+        return total;
+    }
+
+    private async Task SubmitOrder()
+    {
+        errorMessage = null;
+
+        // Validation
+        if (string.IsNullOrWhiteSpace(customerName))
+        {
+            errorMessage = "Customer name is required.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(customerEmail))
+        {
+            errorMessage = "Customer email is required.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(customerPhone))
+        {
+            errorMessage = "Customer phone is required.";
+            return;
+        }
+
+        if (selectedItems.Count == 0)
+        {
+            errorMessage = "Please select at least one item.";
+            return;
+        }
+
+        creating = true;
+        StateHasChanged();
+
+        try
+        {
+            var order = new RestaurantMS.Models.Order
+            {
+                CustomerName = customerName.Trim(),
+                CustomerEmail = customerEmail.Trim(),
+                CustomerPhone = customerPhone.Trim(),
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow,
+                Items = new List<OrderItem>(),
+                Total = CalculateTotal()
+            };
+
+            // Add order items
+            if (menuItems != null)
+            {
+                foreach (var kvp in selectedItems)
+                {
+                    var menuItem = menuItems.FirstOrDefault(m => m.Id == kvp.Key);
+                    if (menuItem != null)
+                    {
+                        order.Items.Add(new OrderItem
+                        {
+                            MenuItemId = menuItem.Id,
+                            MenuItem = menuItem,
+                            Quantity = kvp.Value,
+                            Price = menuItem.Price
+                        });
+                    }
+                }
+            }
+
+            await OrderService.CreateOrderAsync(order);
+            Navigation.NavigateTo("/orders");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating order: {ex.Message}";
+            Console.WriteLine($"Error creating order: {ex.Message}");
+            creating = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/orders");
+    }
+}
