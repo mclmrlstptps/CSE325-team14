@@ -1,5 +1,6 @@
 ﻿@page "/"
 @layout MainLayout
+@using Microsoft.AspNetCore.Components.Authorization
 
 <section class="hero-section d-flex flex-column justify-content-center align-items-center text-center">
     <div class="hero-content animate-fade">
@@ -11,10 +12,19 @@
             <strong>manage supplies</strong>, and <strong>grow your restaurant</strong>.
         </p>
         
-        <div>
-            <a class="btn btn-primary btn-lg me-2 animate-scale" href="/login">Login</a>
-            <a class="btn btn-outline-primary btn-lg animate-scale" href="/register">Register</a>
-        </div>
+        <AuthorizeView>
+            <NotAuthorized>
+                <div>
+                    <a class="btn btn-primary btn-lg me-2 animate-scale" href="/login">Login</a>
+                    <a class="btn btn-outline-primary btn-lg animate-scale" href="/register">Register</a>
+                </div>
+            </NotAuthorized>
+            <Authorized>
+                <div>
+                    <a class="btn btn-primary btn-lg me-2 animate-scale" href="/shop">Go to Shop</a>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </div>
 </section>
 

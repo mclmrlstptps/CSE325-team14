@@ -20,7 +20,7 @@ namespace RestaurantMS.Services
 
         public MongoDBService(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MongoDB");
+            var connectionString = configuration.GetConnectionString("MongoDbConnection");
 
             if (string.IsNullOrEmpty(connectionString))
                 throw new InvalidOperationException("MongoDB connection string is not configured.");

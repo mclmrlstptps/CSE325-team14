@@ -26,6 +26,8 @@ builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<MenuItemService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
