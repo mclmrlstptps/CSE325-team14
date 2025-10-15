@@ -23,6 +23,10 @@ builder.Services.AddScoped<MongoDbContext>();
 // Services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<MenuItemService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<MenuService>();
 
 // Authentication & Authorization
 builder.Services.AddAuthorizationCore();
@@ -32,6 +36,9 @@ builder.Services.AddScoped<CustomAuthStateProvider>();
 // Blazor
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+// Controllers
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
