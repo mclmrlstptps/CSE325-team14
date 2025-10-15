@@ -1,9 +1,6 @@
 @page "/login"
 @using RestaurantMS.Models
-@using Microsoft.AspNetCore.Components.Authorization
-@inject RestaurantMS.Services.AuthService AuthService
-@inject RestaurantMS.Services.UserService UserService
-@inject RestaurantMS.Services.CustomAuthStateProvider AuthStateProvider
+@inject AuthService AuthService
 @inject NavigationManager Navigation
 
 <div class="auth-container">
@@ -99,11 +96,5 @@
         {
             isLoading = false;
         }
-    }
-
-    private class LoginModel
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
     }
 }

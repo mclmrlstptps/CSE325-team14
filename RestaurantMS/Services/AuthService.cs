@@ -22,7 +22,7 @@ namespace RestaurantMS.Services
             return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
         }
 
-        public async Task<bool> RegisterAsync(ApplicationUser newUser, string plainPassword)
+        public async Task<bool> RegisterAsync(User newUser, string plainPassword)
         {
             var existingUser = await _userService.GetUserByEmailAsync(newUser.Email);
             if (existingUser != null) return false;

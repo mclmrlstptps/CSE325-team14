@@ -1,8 +1,6 @@
 @page "/register"
 @using RestaurantMS.Models
-@using Microsoft.AspNetCore.Components.Authorization
-@inject RestaurantMS.Services.AuthService AuthService
-@inject AuthenticationStateProvider AuthStateProvider
+@inject AuthService AuthService
 @inject NavigationManager Navigation
 
 <div class="auth-container">
@@ -86,17 +84,12 @@
                 return;
             }
 
-            if (model.Password != model.ConfirmPassword)
-            {
-                message = "Passwords do not match.";
-                return;
-            }
-
-            if (model.Password.Length < 6)
-            {
-                message = "Password must be at least 6 characters long.";
-                return;
-            }
+        var newUser = new User
+        {
+            Name = model.name,
+            Email = model.email,
+            Role = model.role
+        };
 
             var newUser = new ApplicationUser
             {
