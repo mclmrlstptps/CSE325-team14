@@ -1,7 +1,6 @@
 @page "/register"
-@inject RestaurantMS.Services.AuthService AuthService
+@inject AuthService AuthService
 @inject NavigationManager Navigation
-@using RestaurantMS.Models
 
 <div class="auth-container">
     <div class="auth-card">
@@ -17,27 +16,27 @@
             <ValidationSummary />
 
             <div class="form-group">
-                <InputText @bind-Value="model.name" class="form-control" placeholder=" " />
+                <InputText @bind-Value="model.Name" class="form-control" placeholder=" " />
                 <label class="form-label">Name</label>
             </div>
 
             <div class="form-group">
-                <InputText @bind-Value="model.email" type="email" class="form-control" placeholder=" " />
+                <InputText @bind-Value="model.Email" type="email" class="form-control" placeholder=" " />
                 <label class="form-label">Email</label>
             </div>
 
             <div class="form-group">
-                <InputText @bind-Value="model.password" type="password" class="form-control" placeholder=" " />
+                <InputText @bind-Value="model.Password" type="password" class="form-control" placeholder=" " />
                 <label class="form-label">Password</label>
             </div>
 
             <div class="form-group">
-                <InputText @bind-Value="model.confirmPassword" type="password" class="form-control" placeholder=" " />
+                <InputText @bind-Value="model.ConfirmPassword" type="password" class="form-control" placeholder=" " />
                 <label class="form-label">Confirm Password</label>
             </div>
 
             <div class="form-group">
-                <InputSelect @bind-Value="model.role" class="form-control">
+                <InputSelect @bind-Value="model.Role" class="form-control">
                     <option value="">Select Role</option>
                     <option value="Customer">Customer</option>
                     <option value="Employee">Employee</option>
@@ -61,13 +60,15 @@
 
     private async Task HandleRegister()
     {
-        if (string.IsNullOrWhiteSpace(model.role))
+        message = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(model.Role))
         {
             message = "Please select a role.";
             return;
         }
 
-        if (model.password != model.confirmPassword)
+        if (model.Password != model.ConfirmPassword)
         {
             message = "Passwords do not match.";
             return;
@@ -75,15 +76,15 @@
 
         var newUser = new ApplicationUser
         {
-            Name = model.name,
-            Email = model.email,
-            Role = model.role
+            Name = model.Name,
+            Email = model.Email,
+            Role = model.Role
         };
 
-        var success = await AuthService.RegisterAsync(newUser, model.password);
+        var success = await AuthService.RegisterAsync(newUser, model.Password);
         if (success)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("/login", true);
         }
         else
         {
@@ -93,10 +94,10 @@
 
     private class RegisterModel
     {
-        public string name { get; set; } = string.Empty;
-        public string email { get; set; } = string.Empty;
-        public string password { get; set; } = string.Empty;
-        public string confirmPassword { get; set; } = string.Empty;
-        public string role { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 }

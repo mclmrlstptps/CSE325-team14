@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace RestaurantMS.Models
 {
-    public class ApplicationUser
+    public class OrderItem
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -12,13 +12,13 @@ namespace RestaurantMS.Models
         [BsonElement("name")]
         public string Name { get; set; } = string.Empty;
 
-        [BsonElement("email")]
-        public string Email { get; set; } = string.Empty;
+        [BsonElement("description")]
+        public string Description { get; set; } = string.Empty;
 
-        [BsonElement("passwordHash")]
-        public string PasswordHash { get; set; } = string.Empty;
+        [BsonElement("price")]
+        public decimal Price { get; set; }
 
-        [BsonElement("role")]
-        public string Role { get; set; } = "Customer";
+        [BsonElement("quantity")]
+        public int Quantity { get; set; }
     }
 }

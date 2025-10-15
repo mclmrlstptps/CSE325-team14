@@ -1,0 +1,85 @@
+@page "/checkout"
+@inject CartService CartService
+@inject OrderService OrderService
+@inject AuthService AuthService
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<h3 class="mb-4 text-center">Checkout</h3>
+
+@if (!CartService.Cart.Any())
+{
+    <p>Your cart is empty.</p>
+    <button class="btn btn-primary" @onclick="GoToMenu">Back to Menu</button>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in CartService.Cart)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.Price * item.Quantity).ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h5 class="text-end">Total: @CartService.GetTotal().ToString("C")</h5>
+
+    <div class="text-end mt-3">
+        <button class="btn btn-success" @onclick="PlaceOrder">Place Order</button>
+    </div>
+}
+
+@code {
+    private ApplicationUser? currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await AuthService.GetCurrentUserAsync();
+        if (currentUser == null)
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+    }
+
+    private async Task PlaceOrder()
+    {
+        if (currentUser == null) return;
+
+        var order = new Order
+        {
+            UserId = currentUser.Email,
+            UserName = currentUser.Name,
+            Items = CartService.Cart.Select(i => new OrderItem
+            {
+                Name = i.Name,
+                Description = i.Description,
+                Price = i.Price,
+                Quantity = i.Quantity
+            }).ToList(),
+            TotalAmount = CartService.GetTotal(),
+            Status = "Pending",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await OrderService.CreateOrderAsync(order);
+        CartService.ClearCart();
+
+        Navigation.NavigateTo("/order-history");
+    }
+
+    private void GoToMenu() => Navigation.NavigateTo("/welcome");
+}

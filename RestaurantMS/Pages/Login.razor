@@ -1,7 +1,6 @@
 @page "/login"
-@inject RestaurantMS.Services.AuthService AuthService
+@inject AuthService AuthService
 @inject NavigationManager Navigation
-@using RestaurantMS.Models
 
 <div class="auth-container">
     <div class="auth-card">
@@ -17,12 +16,12 @@
             <ValidationSummary />
 
             <div class="form-group">
-                <InputText @bind-Value="model.email" type="email" class="form-control" placeholder=" " />
+                <InputText @bind-Value="model.Email" type="email" class="form-control" placeholder=" " />
                 <label class="form-label">Email</label>
             </div>
 
             <div class="form-group">
-                <InputText @bind-Value="model.password" type="password" class="form-control" placeholder=" " />
+                <InputText @bind-Value="model.Password" type="password" class="form-control" placeholder=" " />
                 <label class="form-label">Password</label>
             </div>
 
@@ -41,10 +40,12 @@
 
     private async Task HandleLogin()
     {
-        var success = await AuthService.LoginAsync(model.email, model.password);
+        message = string.Empty;
+
+        var success = await AuthService.LoginAsync(model.Email, model.Password);
         if (success)
         {
-            Navigation.NavigateTo("/"); // Redirect to home/dashboard
+            Navigation.NavigateTo("/welcome", true);
         }
         else
         {
@@ -54,7 +55,7 @@
 
     private class LoginModel
     {
-        public string email { get; set; } = string.Empty;
-        public string password { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,54 @@
+@page "/order-history"
+@inject OrderService OrderService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<h3 class="mb-4 text-center">My Orders</h3>
+
+@if (orders == null)
+{
+    <p>Loading orders...</p>
+}
+else if (!orders.Any())
+{
+    <p>No orders found.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>@order.TotalAmount.ToString("C")</td>
+                    <td>@order.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Order>? orders;
+    private ApplicationUser? currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await AuthService.GetCurrentUserAsync();
+        if (currentUser == null)
+        {
+            Navigation.NavigateTo("/login", true);
+            return;
+        }
+
+        orders = await OrderService.GetOrdersByUserAsync(currentUser.Email);
+    }
+}

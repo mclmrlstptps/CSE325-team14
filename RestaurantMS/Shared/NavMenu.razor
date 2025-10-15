@@ -11,13 +11,11 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-
                 @if (isAuthenticated)
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Dashboard</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/checkout">Checkout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/order-history">Order History</a></li>
                     <li class="nav-item">
                         <button class="btn btn-link nav-link" @onclick="Logout">Logout</button>
                     </li>

@@ -1,0 +1,39 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+@if (isAuthenticated)
+{
+    <div class="sidebar bg-light shadow-sm vh-100 p-3">
+        <h5 class="mb-3">Menu</h5>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2">
+                <a class="nav-link" href="/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" href="/checkout">Checkout</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link" href="/order-history">Order History</a>
+            </li>
+            <li class="nav-item mt-3">
+                <button class="btn btn-outline-danger w-100" @onclick="Logout">Logout</button>
+            </li>
+        </ul>
+    </div>
+}
+
+@code {
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+    }
+
+    private void Logout()
+    {
+        Navigation.NavigateTo("/Account/Logout", true);
+    }
+}

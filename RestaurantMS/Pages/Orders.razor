@@ -1,0 +1,46 @@
+@page "/orders"
+@inject OrderService OrderService
+
+<h3 class="mb-4 text-center">All Orders</h3>
+
+@if (orders == null)
+{
+    <p>Loading orders...</p>
+}
+else if (!orders.Any())
+{
+    <p>No orders found.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.UserName</td>
+                    <td>@order.Status</td>
+                    <td>@order.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy HH:mm")</td>
+                    <td>@order.TotalAmount.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Order>? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await OrderService.GetAllOrdersAsync();
+    }
+}
