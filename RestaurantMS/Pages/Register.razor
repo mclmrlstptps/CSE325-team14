@@ -81,17 +81,11 @@
             if (string.IsNullOrWhiteSpace(model.Role))
             {
                 message = "Please select a role.";
+                isLoading = false;
                 return;
             }
 
-        var newUser = new User
-        {
-            Name = model.name,
-            Email = model.email,
-            Role = model.role
-        };
-
-            var newUser = new ApplicationUser
+            var newUser = new User
             {
                 Name = model.Name,
                 Email = model.Email.ToLowerInvariant(),
@@ -119,14 +113,5 @@
         {
             isLoading = false;
         }
-    }
-
-    private class RegisterModel
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string ConfirmPassword { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
     }
 }

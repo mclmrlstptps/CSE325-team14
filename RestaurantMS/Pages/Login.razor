@@ -1,7 +1,11 @@
 @page "/login"
 @using RestaurantMS.Models
+@using RestaurantMS.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthService AuthService
 @inject NavigationManager Navigation
+@inject UserService UserService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <div class="auth-container">
     <div class="auth-card">
@@ -66,7 +70,7 @@
                 if (user != null)
                 {
                     // Mark user as authenticated in the auth state provider
-                    await AuthStateProvider.MarkUserAsAuthenticated(
+                    await ((CustomAuthStateProvider)AuthStateProvider).MarkUserAsAuthenticated(
                         user.Email, 
                         user.Role,
                         user.Id,
